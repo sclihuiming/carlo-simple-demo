@@ -8,6 +8,9 @@ class init {
         this.echart_3();
         this.echart_4();
         this.serieData = [];
+        this.netUploadData = [];
+        this.netDownloadData = [];
+
 
         this.processDataX = [];
         this.processSeriesData = [{
@@ -142,25 +145,16 @@ class init {
     echart_2() {
         // 基于准备好的dom，初始化echarts实例
         this.memoryChart = this.echarts.init(this.document.getElementById('chart_2'));
-        let giftImageUrl = "data:image/png;base64,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";
-        this.memoryChart.setOption({
-            // graphic: {
-            //     elements: [{
-            //         type: 'image',
-            //         style: {
-            //             image: giftImageUrl,
-            //             width: 30,
-            //             height: 30
-            //         },
-            //         left: '73%',
-            //         top: 'center'
-            //     }]
+
+        this.memoryOption = {
+            // tooltip: {
+            //     trigger: 'axis',
+            //     axisPointer: {
+            //         type: 'shadow'
+            //     }
             // },
             tooltip: {
-                trigger: 'axis',
-                axisPointer: {
-                    type: 'shadow'
-                }
+                formatter: "{a}<br/> {c}{b}"
             },
             legend: {
                 data: ['ex'],
@@ -173,344 +167,285 @@ class init {
                 bottom: '10%',
                 containLabel: true,
             },
-            xAxis: {
-                type: 'value',
-                position: 'top',
-                splitLine: { show: false },
-                boundaryGap: [0, 0.01],
-                axisTick: {
-                    show: false
-                },
-                axisLabel: {
-                    textStyle: {
-                        color: '#9ea7c4',
-                        fontSize: 12
-                    }
-                },
-                axisLine: {
-                    show: true,
-                    lineStyle: {
-                        color: '#6173A3'
-                    }
-                },
-            },
-            yAxis: {
-                type: 'category',
-                data: ['已使用', '空闲', '斗柜', '大床', '电视柜'],
-                axisTick: {
-                    show: false
-                },
-                splitLine: {
-                    show: false
-                },
-                axisLabel: {
-                    textStyle: {
-                        color: '#9ea7c4',
-                        fontSize: 12
-                    }
-                },
-                axisLine: {
-                    show: true,
-                    lineStyle: {
-                        color: '#6173A3'
-                    }
-                },
-            },
+
             series: [
                 {
-                    name: '',
-                    itemStyle: {
-                        normal: {
-                            color: function (params) {
-                                // build a color map as your need.
-                                var colorList = [
-                                    '#C1232B', '#B5C334', '#FCCE10', '#E87C25', '#27727B',
-                                    '#FE8463', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD',
-                                    '#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0'
-                                ];
-                                return colorList[params.dataIndex]
-                            },
-                            shadowBlur: 20,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    name: '已使用',
+                    type: 'gauge',
+                    z: 3,
+                    min: 0,
+                    max: 220,
+                    splitNumber: 10,
+                    radius: '95%',
+                    axisLine: {            // 坐标轴线
+                        lineStyle: {       // 属性lineStyle控制线条样式
+                            color: [[0.09, 'lime'], [0.82, '#1e90ff'], [1, '#ff4500']],
+                            width: 1,
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 10
                         }
                     },
-                    type: 'bar',
-                    data: [260, 210, 190, 170, 170]
-                }, {
-                    type: 'pie',
-                    radius: [30, '80%'],
-                    center: ['75%', '50%'],
-                    roseType: 'radius',
-                    color: ['#C1232B', '#B5C334', '#FCCE10', '#E87C25', '#27727B',
-                        '#FE8463', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD',
-                        '#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0'],
-                    data: [{
-                        value: 26,
-                        name: '茶几'
-                    }, {
-                        value: 21,
-                        name: '床头柜'
-                    }, {
-                        value: 19,
-                        name: '斗柜'
-                    }, {
-                        value: 17,
-                        name: '大床'
-                    }, {
-                        value: 17,
-                        name: '电视柜'
-                    }],
-                    label: {
-                        normal: {
-                            textStyle: {
-                                fontSize: 14
-                            },
-                            formatter: function (param) {
-                                return param.name + ':\n' + Math.round(param.percent) + '%';
-                            }
+                    axisLabel: {            // 坐标轴小标记
+                        textStyle: {       // 属性lineStyle控制线条样式
+                            fontWeight: 'bolder',
+                            color: '#fff',
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 10
                         }
                     },
-                    labelLine: {
-                        normal: {
-                            smooth: true,
-                            lineStyle: {
-                                width: 2
-                            }
+                    axisTick: {            // 坐标轴小标记
+                        length: 10,        // 属性length控制线长
+                        lineStyle: {       // 属性lineStyle控制线条样式
+                            color: 'auto',
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 10
                         }
                     },
-                    itemStyle: {
-                        normal: {
-                            shadowBlur: 30,
-                            shadowColor: 'rgba(0, 0, 0, 0.4)'
+                    splitLine: {           // 分隔线
+                        length: 16,         // 属性length控制线长
+                        lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                            width: 3,
+                            color: '#fff',
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 10
                         }
                     },
-
-                    animationType: 'scale',
-                    animationEasing: 'elasticOut',
-                    animationDelay: function (idx) {
-                        return Math.random() * 200;
-                    }
-                }]
-        });
+                    pointer: {           // 分隔线
+                        shadowColor: '#fff', //默认透明
+                        shadowBlur: 5
+                    },
+                    title: {
+                        textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                            fontWeight: 'bolder',
+                            fontSize: 20,
+                            fontStyle: 'italic',
+                            color: '#fff',
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 10
+                        }
+                    },
+                    detail: {
+                        backgroundColor: 'rgba(30,144,255,0.8)',
+                        // borderWidth: 1,
+                        borderColor: '#fff',
+                        shadowColor: '#fff', //默认透明
+                        shadowBlur: 5,
+                        offsetCenter: [0, '50%'],       // x, y，单位px
+                        textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                            fontWeight: 'bolder',
+                            color: '#fff'
+                        }
+                    },
+                    data: [{ value: 40, name: 'GB' }]
+                },
+                {
+                    name: '活跃内存',
+                    type: 'gauge',
+                    center: ['20%', '55%'],    // 默认全局居中
+                    radius: '75%',
+                    min: 0,
+                    max: 16,
+                    endAngle: 45,
+                    splitNumber: 8,
+                    axisLine: {            // 坐标轴线
+                        lineStyle: {       // 属性lineStyle控制线条样式
+                            color: [[0.29, 'lime'], [0.86, '#1e90ff'], [1, '#ff4500']],
+                            width: 2,
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 10
+                        }
+                    },
+                    axisLabel: {            // 坐标轴小标记
+                        textStyle: {       // 属性lineStyle控制线条样式
+                            fontWeight: 'bolder',
+                            color: '#fff',
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 10
+                        }
+                    },
+                    axisTick: {            // 坐标轴小标记
+                        length: 9,        // 属性length控制线长
+                        lineStyle: {       // 属性lineStyle控制线条样式
+                            color: 'auto',
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 10
+                        }
+                    },
+                    splitLine: {           // 分隔线
+                        length: 14,         // 属性length控制线长
+                        lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                            width: 3,
+                            color: '#fff',
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 10
+                        }
+                    },
+                    pointer: {
+                        width: 5,
+                        shadowColor: '#fff', //默认透明
+                        shadowBlur: 5
+                    },
+                    title: {
+                        offsetCenter: [0, '-30%'],       // x, y，单位px
+                        textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                            fontWeight: 'bolder',
+                            fontStyle: 'italic',
+                            color: '#fff',
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 10
+                        }
+                    },
+                    detail: {
+                        //backgroundColor: 'rgba(30,144,255,0.8)',
+                        // borderWidth: 1,
+                        borderColor: '#fff',
+                        shadowColor: '#fff', //默认透明
+                        shadowBlur: 5,
+                        width: 80,
+                        height: 30,
+                        offsetCenter: [25, '20%'],       // x, y，单位px
+                        textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                            fontWeight: 'bolder',
+                            color: '#fff'
+                        }
+                    },
+                    data: [{ value: 1.5, name: 'GB' }]
+                }
+            ]
+        }
+        this.memoryChart.setOption(this.memoryOption);
     }
 
     echart_3() {
         // 基于准备好的dom，初始化echarts实例
-        this.otherCHart = this.echarts.init(this.document.getElementById('chart_3'));
+        this.netChart = this.echarts.init(this.document.getElementById('chart_3'));
 
-        let option = {
-            // backgroundColor: "#404A59",
-            color: ["#036BC8", "#5EBEFC", "#2EF7F3"],
-
-            title: [{
-                text: '',
-                left: '1%',
-                top: '6%',
-                textStyle: {
-                    color: '#fff'
-                }
-            }, {
-                text: '',
-                left: '83%',
-                top: '6%',
-                textAlign: 'center',
-                textStyle: {
-                    color: '#fff',
-                    fontSize: 16
-                }
-            }],
-            tooltip: {
-                trigger: 'axis'
-            },
+        let legendData = ['upload', 'download'];
+        let colors = ["#036BC8", "#FFF", "#5EBEFC", "#2EF7F3"];
+        this.netOption = {
             legend: {
-                x: 300,
-                top: '7%',
+                show: false,
+                left: "center",
+                data: legendData,
+                y: "5%",
+                itemWidth: 18,
+                itemHeight: 12,
                 textStyle: {
-                    color: '#ffd285',
+                    color: "#fff",
+                    fontSize: 14
                 },
-                data: ['2016年', '2017年', '2018年']
-            },
-            grid: {
-                left: '1%',
-                right: '28%',
-                top: '16%',
-                bottom: '6%',
-                containLabel: true
             },
             toolbox: {
-                "show": false,
-                feature: {
-                    saveAsImage: {}
+                orient: 'vertical',
+                right: '1%',
+                top: '20%',
+                iconStyle: {
+                    color: '#fff',
+                    borderColor: '#fff',
+                    borderWidth: 1,
                 }
             },
-            xAxis: {
-                type: 'category',
-                "axisLine": {
-                    lineStyle: {
-                        color: '#fff'
-                    }
-                },
-                "axisTick": {
-                    "show": false
-                },
-                axisLabel: {
-                    textStyle: {
-                        color: '#fff'
-                    }
-                },
-                boundaryGap: false,
-                data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+            color: colors,
+            grid: {
+                left: '2%',
+                top: "15%",
+                bottom: "2%",
+                right: "5%",
+                containLabel: true
             },
-            yAxis: {
-                "axisLine": {
+            tooltip: {
+                trigger: 'axis',
+                formatter: function (params) {
+                    let uploadInfo = params[0];
+                    let downloadInfo = params[1];
+                    var date = new Date(uploadInfo.name);
+
+                    let uploadSpeed = uploadInfo.value[1];
+                    let downloadSpeed = downloadInfo.value[1];
+                    if(uploadSpeed>1024){
+                        uploadSpeed = (uploadSpeed/1024).toFixed(2) + 'Mb/s';
+                    }else{
+                        uploadSpeed += 'kb/s';
+                    }
+
+                    if(downloadSpeed>1024){
+                        downloadSpeed = (downloadSpeed/1024).toFixed(2) + 'Mb/s';
+                    }else{
+                        downloadSpeed += 'kb/s';
+                    }
+                    return moment(date).format('HH:mm:ss') + ' <br/> ' + '上传速度：' + uploadSpeed
+                        + ' <br/> ' + '下载速度：' + downloadSpeed;
+
+                },
+                axisPointer: {
+                    type: 'shadow',
+                    animation: false
+                }
+            },
+            xAxis: [{
+                type: 'time',
+                axisLine: {
+                    show: true,
                     lineStyle: {
-                        color: '#fff'
+                        color: '#6173A3'
                     }
                 },
                 splitLine: {
-                    show: false,
-                    lineStyle: {
-                        color: '#fff'
+                    show: false
+                },
+                axisLabel: {
+                    interval: 0,
+                    textStyle: {
+                        color: '#9ea7c4',
+                        fontSize: 12
                     }
                 },
-                "axisTick": {
-                    "show": false
+                axisTick: {
+                    show: false
+                },
+            },],
+            yAxis: [{
+                type: 'value',
+                name: 'kb/s',
+                axisTick: {
+                    show: false
+                },
+                splitLine: {
+                    show: false
                 },
                 axisLabel: {
                     textStyle: {
-                        color: '#fff'
+                        color: '#9ea7c4',
+                        fontSize: 12
                     }
                 },
-                type: 'value'
-            },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#6173A3'
+                    }
+                },
+            },],
             series: [{
-                name: '',
-                smooth: true,
+                name: '上传',
                 type: 'line',
-                symbolSize: 9,
-                symbol: 'circle',
-                data: [90, 50, 39, 50, 120, 82, 80, 89, 92, 80, 102, 77]
-            }, {
-                name: '',
-                smooth: true,
-                type: 'line',
-                symbolSize: 9,
-                symbol: 'circle',
-                data: [70, 50, 50, 87, 90, 80, 70, 77, 86, 94, 96, 99]
-            }, {
-                name: '',
-                smooth: true,
-                type: 'line',
-                symbolSize: 9,
-                symbol: 'circle',
-                data: [100, 112, 80, 132, 60, 70, 90, 131, 121, 102, 95, 105]
+                symbol: "none",
+                symbolSize: 2,
+                data: this.netUploadData
             },
             {
-                type: 'pie',
-                center: ['83%', '33%'],
-                radius: ['30%', '35%'],
-                label: {
-                    normal: {
-                        position: 'center'
-                    }
-                },
-                data: [{
-                    value: 335,
-                    name: '销售分析',
-                    itemStyle: {
-                        normal: {
-                            color: '#FF7E45'
-                        }
-                    },
-                    label: {
-                        normal: {
-                            formatter: '{d} %',
-                            textStyle: {
-                                color: '#ffd285',
-                                fontSize: 14
-
-                            }
-                        }
-                    }
-                }, {
-                    value: 180,
-                    name: '占位',
-                    tooltip: {
-                        show: false
-                    },
-                    itemStyle: {
-                        normal: {
-                            color: '#fff'
-                        }
-                    },
-                    label: {
-                        normal: {
-                            textStyle: {
-                                color: '#ffd285',
-                            },
-                            formatter: '\nexample'
-                        }
-                    }
-                }]
-            },
-
-
-            {
-                type: 'pie',
-                center: ['83%', '72%'],
-                radius: ['30%', '35%'],
-                label: {
-                    normal: {
-                        position: 'center'
-                    }
-                },
-                data: [{
-                    value: 435,
-                    name: '销售分析',
-                    itemStyle: {
-                        normal: {
-                            color: '#4834CB'
-                        }
-                    },
-                    label: {
-                        normal: {
-                            formatter: '{d} %',
-                            textStyle: {
-                                color: '#fff',
-                                fontSize: 14
-
-                            }
-                        }
-                    }
-                }, {
-                    value: 100,
-                    name: '占位',
-                    tooltip: {
-                        show: false
-                    },
-                    itemStyle: {
-                        normal: {
-                            color: '#fff'
-
-
-                        }
-                    },
-                    label: {
-                        normal: {
-                            textStyle: {
-                                color: '#fff',
-                            },
-                            formatter: '\n例子'
-                        }
-                    }
-                }]
+                name: '下载',
+                type: 'line',
+                symbol: "none",
+                symbolSize: 2,
+                data: this.netDownloadData
             }]
-        }
+        };
 
         // 使用刚指定的配置项和数据显示图表。
-        this.otherCHart.setOption(option);
+        this.netChart.setOption(this.netOption);
         window.addEventListener("resize", function () {
-            this.otherCHart.resize();
+            this.netChart.resize();
         });
     }
 
@@ -639,7 +574,6 @@ class init {
             if (this.serieData.length > 120) {
                 this.serieData.shift();
             }
-            console.log(cpuCurrentload)
             this.serieData.push({
                 name: now,
                 value: [now, cpuCurrentload]
@@ -651,11 +585,57 @@ class init {
                     }]
                 });
             }
-            //other
+
+            //memory chart
+            let memInfo = sysInfo.mem;
+            let total = (memInfo.total / (1024 * 1024 * 1024)).toFixed(0);
+            let used = (memInfo.used / (1024 * 1024 * 1024)).toFixed(2);
+            let active = (memInfo.active / (1024 * 1024 * 1024)).toFixed(2);
+            if (this.memoryChart) {
+                let splitNumber = Math.floor(total / 2);
+                this.memoryOption.series[0].max = total;
+                this.memoryOption.series[0].splitNumber = splitNumber;
+                this.memoryOption.series[0].data[0].value = used;
+                this.memoryOption.series[1].max = total;
+                this.memoryOption.series[1].splitNumber = splitNumber;
+                this.memoryOption.series[1].data[0].value = active;
+                this.memoryChart.setOption(this.memoryOption, true);
+            }
+
+
+
+            //net chart
+            let networkStats = sysInfo.networkStats;
+            let upload = Math.ceil(networkStats.tx_sec / 1024);
+            let download = Math.ceil(networkStats.rx_sec / 1024);
+
+            if (this.netUploadData.length > 120) {
+                this.netUploadData.shift();
+            }
+            if (this.netDownloadData.length > 120) {
+                this.netDownloadData.shift();
+            }
+            this.netUploadData.push({
+                name: now,
+                value: [now, upload]
+            });
+            this.netDownloadData.push({
+                name: now,
+                value: [now, download]
+            });
+
+            if (this.netChart) {
+                this.netChart.setOption({
+                    series: [{
+                        data: this.netUploadData
+                    }, {
+                        data: this.netDownloadData
+                    }]
+                });
+            }
 
             //process chart
-            let processInfo = sysInfo.processes|| [];
-            console.log(sysInfo.processes)
+            let processInfo = sysInfo.processes || [];
             let _len = processInfo.length;
             this.processDataX = [];
             let cpuInfo = {
@@ -667,10 +647,10 @@ class init {
                         show: true,
                         position: 'top',
                         textStyle: {
-                          color: 'white'
+                            color: 'white'
                         }
                     }
-               }
+                }
             };
             let menInfo = {
                 name: '内存使用',
@@ -681,11 +661,12 @@ class init {
                         show: true,
                         position: 'top',
                         textStyle: {
-                          color: 'white'
+                            color: 'white'
                         }
                     }
-               }
+                }
             };
+            //构造echart数据
             for (let i = 0; i < _len; i++) {
                 this.processDataX.push(processInfo[i].name);
                 cpuInfo.data.push(processInfo[i].pcpu);
@@ -694,6 +675,7 @@ class init {
 
             this.processSeriesData = [cpuInfo, menInfo];
             if (this.processChart) {
+                //重新渲染表格
                 this.processChart.setOption({
                     xAxis: [{
                         type: 'category',
