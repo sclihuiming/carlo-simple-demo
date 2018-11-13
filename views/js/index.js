@@ -1,30 +1,43 @@
-$(function () {
-    echart_1();
-    echart_2();
-    echart_3();
+class init {
+    constructor(document, echarts, monit) {
+        this.document = document;
+        this.echarts = echarts;
+        this.monit = monit;
+        this.echart_1();
+        this.echart_2();
+        this.echart_3();
+        this.echart_4();
+        this.serieData = [];
 
-    var cpuChart, memoryChart, otherCHart;
-    var serieData = [];
+        this.processDataX = [];
+        this.processSeriesData = [{
+            name: 'xxx',
+            type: 'bar',
+            data: []
+        }];
 
-    function echart_1() {
+        this.cronTask();
+    }
+
+    echart_1() {
         // 基于准备好的dom，初始化echarts实例
-        cpuChart = echarts.init(document.getElementById('chart_1'));
-        var legendData = ['cpu'];
-        var title = "cpu实时数据";//标题
-        var colors = ["#036BC8", "#FFF", "#5EBEFC", "#2EF7F3"];
-        var option = {
+        this.cpuChart = this.echarts.init(this.document.getElementById('chart_1'));
+        let legendData = ['cpu'];
+        let title = "cpu";//标题
+        let colors = ["#036BC8", "#FFF", "#5EBEFC", "#2EF7F3"];
+        let option = {
             // backgroundColor: '#0f375f',
-            title: {
-                text: title,
-                textAlign: 'left',
-                textStyle: {
-                    color: "#fff",
-                    fontSize: "12",
-                    fontWeight: "bold"
-                }
-            },
+            // title: {
+            //     text: title,
+            //     textAlign: 'left',
+            //     textStyle: {
+            //         color: "#fff",
+            //         fontSize: "12",
+            //         fontWeight: "bold"
+            //     }
+            // },
             legend: {
-                show: true,
+                show: false,
                 left: "center",
                 data: legendData,
                 y: "5%",
@@ -48,17 +61,20 @@ $(function () {
             color: colors,
             grid: {
                 left: '2%',
-                top: "12%",
-                bottom: "5%",
+                top: "15%",
+                bottom: "2%",
                 right: "5%",
                 containLabel: true
             },
             tooltip: {
                 trigger: 'axis',
+                // formatter: function (params) {
+                //     // params = params[0];
+                //     // var date = new Date(params.name);
+                //     return params[0] + ' : ' + params.value[1] + '%';
+                // },
                 axisPointer: {
-                    type: 'shadow'
-                },
-                axisPointer: {
+                    type: 'shadow',
                     animation: false
                 }
             },
@@ -86,6 +102,8 @@ $(function () {
                 // data: xAxisData,
             },],
             yAxis: [{
+                type: 'value',
+                name: '百分比',
                 axisTick: {
                     show: false
                 },
@@ -105,27 +123,27 @@ $(function () {
                     }
                 },
             },],
-            series: {
+            series: [{
                 name: 'cpu',
                 type: 'line',
-                symbol: "circle",
-                symbolSize: 10,
-                data: serieData
-            }
+                symbol: "none",
+                symbolSize: 2,
+                data: this.serieData
+            }]
         };
 
         // 使用刚指定的配置项和数据显示图表。
-        cpuChart.setOption(option);
+        this.cpuChart.setOption(option);
         window.addEventListener("resize", function () {
-            cpuChart.resize();
+            this.cpuChart.resize();
         });
     }
 
-    function echart_2() {
+    echart_2() {
         // 基于准备好的dom，初始化echarts实例
-        memoryChart = echarts.init(document.getElementById('chart_2'));
-        var giftImageUrl = "data:image/png;base64,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";
-        memoryChart.setOption({
+        this.memoryChart = this.echarts.init(this.document.getElementById('chart_2'));
+        let giftImageUrl = "data:image/png;base64,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";
+        this.memoryChart.setOption({
             // graphic: {
             //     elements: [{
             //         type: 'image',
@@ -276,11 +294,11 @@ $(function () {
         });
     }
 
-    function echart_3() {
+    echart_3() {
         // 基于准备好的dom，初始化echarts实例
-        otherCHart = echarts.init(document.getElementById('chart_3'));
+        this.otherCHart = this.echarts.init(this.document.getElementById('chart_3'));
 
-        option = {
+        let option = {
             // backgroundColor: "#404A59",
             color: ["#036BC8", "#5EBEFC", "#2EF7F3"],
 
@@ -490,36 +508,238 @@ $(function () {
         }
 
         // 使用刚指定的配置项和数据显示图表。
-        otherCHart.setOption(option);
+        this.otherCHart.setOption(option);
         window.addEventListener("resize", function () {
-            otherCHart.resize();
+            this.otherCHart.resize();
         });
     }
 
-    //定时任务
-    setInterval(function () {
-        if (serieData.length > 120) {
-            serieData.shift();
-        }
-        serieData.push(randomData());
-        if (cpuChart) {
-            cpuChart.setOption({
-                series: [{
-                    data: serieData
-                }]
-            });
-        }
-    }, 1000);
+    echart_4() {
+        // 基于准备好的dom，初始化echarts实例
+        this.processChart = this.echarts.init(this.document.getElementById('chart_4'));
+        let legendData = ['cpu', 'mem'];
+        let title = "进程";//标题
+        let colors = ["#036BC8", "#FFF", "#5EBEFC", "#2EF7F3"];
+        let option = {
+            // backgroundColor: '#0f375f',
+            // title: {
+            //     text: title,
+            //     textAlign: 'left',
+            //     textStyle: {
+            //         color: "#fff",
+            //         fontSize: "12",
+            //         fontWeight: "bold"
+            //     }
+            // },
+            legend: {
+                show: true,
+                left: "center",
+                data: legendData,
+                y: "5%",
+                itemWidth: 18,
+                itemHeight: 12,
+                textStyle: {
+                    color: "#fff",
+                    fontSize: 14
+                },
+            },
+            toolbox: {
+                orient: 'vertical',
+                right: '1%',
+                top: '20%',
+                iconStyle: {
+                    color: '#fff',
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                }
+            },
+            color: colors,
+            grid: {
+                left: '2%',
+                top: "13%",
+                bottom: "2%",
+                right: "5%",
+                containLabel: true
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow',
+                    animation: false
+                }
+            },
+            xAxis: [{
+                type: 'category',
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#6173A3'
+                    }
+                },
+                splitLine: {
+                    show: false
+                },
+                axisLabel: {
+                    interval: 0,
+                    textStyle: {
+                        color: '#9ea7c4',
+                        fontSize: 12
+                    }
+                },
+                axisTick: {
+                    show: false
+                },
+                data: this.processDataX,
+            }],
+            yAxis: [{
+                type: 'value',
+                name: '百分比',
+                axisTick: {
+                    show: false
+                },
+                splitLine: {
+                    show: false
+                },
+                axisLabel: {
+                    textStyle: {
+                        color: '#9ea7c4',
+                        fontSize: 12
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#6173A3'
+                    }
+                },
+                axisLabel: {
+                    formatter: '{value} %'
+                }
+            }],
+            series: this.processSeriesData
+        };
 
-    function randomData() {
-        let now = new Date().getTime();
-        let value = Math.random() * 1000 - 10;
-        return {
-            name: now,
-            value: [
-                now,
-                Math.round(value)
-            ]
-        }
+        // 使用刚指定的配置项和数据显示图表。
+        this.processChart.setOption(option);
+        window.addEventListener("resize", function () {
+            this.processChart.resize();
+        });
     }
-});
+
+    cronTask() {
+        //定时任务
+        setInterval(async () => {
+            let now = new Date().getTime();
+            let sysInfo = await this.monit();
+            let cpuCurrentLoadInfo = sysInfo.currentLoad || {};
+            let cpuCurrentload = (cpuCurrentLoadInfo.currentload || 0).toFixed(1);
+            // console.log(cpuCurrentload)
+
+            //cpuchart data change 
+            if (this.serieData.length > 120) {
+                this.serieData.shift();
+            }
+            console.log(cpuCurrentload)
+            this.serieData.push({
+                name: now,
+                value: [now, cpuCurrentload]
+            });
+            if (this.cpuChart) {
+                this.cpuChart.setOption({
+                    series: [{
+                        data: this.serieData
+                    }]
+                });
+            }
+            //other
+
+            //process chart
+            let processInfo = sysInfo.processes|| [];
+            console.log(sysInfo.processes)
+            let _len = processInfo.length;
+            this.processDataX = [];
+            let cpuInfo = {
+                name: 'cpu使用',
+                type: 'bar',
+                data: [],
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top',
+                        textStyle: {
+                          color: 'white'
+                        }
+                    }
+               }
+            };
+            let menInfo = {
+                name: '内存使用',
+                type: 'bar',
+                data: [],
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top',
+                        textStyle: {
+                          color: 'white'
+                        }
+                    }
+               }
+            };
+            for (let i = 0; i < _len; i++) {
+                this.processDataX.push(processInfo[i].name);
+                cpuInfo.data.push(processInfo[i].pcpu);
+                menInfo.data.push(processInfo[i].pmem);
+            }
+
+            this.processSeriesData = [cpuInfo, menInfo];
+            if (this.processChart) {
+                this.processChart.setOption({
+                    xAxis: [{
+                        type: 'category',
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#6173A3'
+                            }
+                        },
+                        splitLine: {
+                            show: false
+                        },
+                        axisLabel: {
+                            interval: 0,
+                            textStyle: {
+                                color: '#9ea7c4',
+                                fontSize: 12
+                            }
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        data: this.processDataX,
+                    }],
+                    series: this.processSeriesData
+                });
+            }
+        }, 1000);
+    }
+
+
+
+    // randomData() {
+    //     let now = new Date().getTime();
+    //     let value = Math.random() * 1000 - 10;
+    //     return {
+    //         name: now,
+    //         value: [
+    //             now,
+    //             Math.round(value)
+    //         ]
+    //     }
+    // }
+
+}
+
+window.onload = function () {
+    new init(document, echarts, monit);
+} 

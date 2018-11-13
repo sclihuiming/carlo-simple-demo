@@ -2,10 +2,11 @@ const carlo = require('carlo');
 const os = require('os');
 const path = require('path');
 const si = require('systeminformation');
+const _ = require('lodash');
 
 class systemMonit {
   constructor() {
-    this.launch().catch(err=>{console.log(err)});
+    this.launch().catch(err => { console.log(err) });
     this.monit();
   }
 
@@ -13,8 +14,8 @@ class systemMonit {
     this.app = await carlo.launch(
       {
         bgcolor: '#2b2e3b',
-        width: 1000,
-        height: 650,
+        width: 1100,
+        height: 730,
         userDataDir: path.join(os.homedir(), '.carlosysinfo'),
         args: process.env.DEV === 'true' ? ['--auto-open-devtools-for-tabs'] : []
       });
@@ -27,13 +28,14 @@ class systemMonit {
 
   async monit() {
     const info = {};
-
     await Promise.all([
+      si.mem().then(r => info.mem = r),
+      si.fullLoad().then(r => info.fullLoad = r),
       si.currentLoad().then(r => info.currentLoad = r),
-      si.cpu().then(r => info.cpu = r),
       si.osInfo().then(r => info.osInfo = r),
+      si.processes().then(r => info.processes = _.slice(_.orderBy(r.list, 'pcpu', 'desc'), 0, 5))
     ]);
-    console.log(info);
+    return info;
   }
 }
 
