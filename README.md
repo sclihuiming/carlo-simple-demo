@@ -22,5 +22,5 @@ npm start
 * 本地必须有chrome浏览器，如果没有会报错
 * chrome的版本最好和官方保持同步
 
-##示例
+## 示例
 ![demo](monit_.gif)
