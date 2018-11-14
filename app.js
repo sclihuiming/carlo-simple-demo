@@ -36,6 +36,8 @@ class systemMonit {
       si.fullLoad().then(r => info.fullLoad = r),
       si.currentLoad().then(r => info.currentLoad = r),
       si.osInfo().then(r => info.osInfo = r),
+      si.battery().then(r => info.battery = r),
+      si.system().then(r => info.system = r),
       si.processes().then(r => info.processes = _.slice(_.orderBy(r.list, 'pcpu', 'desc'), 0, 5)),
     ]);
     // info.networkStats = this.networkStats || {};

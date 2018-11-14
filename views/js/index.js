@@ -362,15 +362,15 @@ class init {
 
                     let uploadSpeed = uploadInfo.value[1];
                     let downloadSpeed = downloadInfo.value[1];
-                    if(uploadSpeed>1024){
-                        uploadSpeed = (uploadSpeed/1024).toFixed(2) + 'Mb/s';
-                    }else{
+                    if (uploadSpeed > 1024) {
+                        uploadSpeed = (uploadSpeed / 1024).toFixed(2) + 'Mb/s';
+                    } else {
                         uploadSpeed += 'kb/s';
                     }
 
-                    if(downloadSpeed>1024){
-                        downloadSpeed = (downloadSpeed/1024).toFixed(2) + 'Mb/s';
-                    }else{
+                    if (downloadSpeed > 1024) {
+                        downloadSpeed = (downloadSpeed / 1024).toFixed(2) + 'Mb/s';
+                    } else {
                         downloadSpeed += 'kb/s';
                     }
                     return moment(date).format('HH:mm:ss') + ' <br/> ' + '上传速度：' + uploadSpeed
@@ -703,6 +703,25 @@ class init {
                     series: this.processSeriesData
                 });
             }
+
+            //other info
+            let osInfo = sysInfo.osInfo || {};
+            let system = sysInfo.system || {};
+            let battery = sysInfo.battery || {};
+
+
+            let otherMsg = '本机信息：' + system.model + ' 序列号：' + system.serial + ' 电池电量剩余：' + battery.percent
+                + '%   ' + '充电状态：' + (battery.ischarging ? '正在充电' : '没有充电') + ' 电池厂商：' + battery.manufacturer;
+            let hostname = osInfo.hostname;
+            let model = system.model;
+            if (!this.title) {
+                this.document.getElementById('containTitle').innerHTML = hostname;
+                this.title = true;
+            }
+            console.log(otherMsg)
+            this.document.getElementById('otherInfo').innerHTML = otherMsg;
+
+
         }, 1000);
     }
 
