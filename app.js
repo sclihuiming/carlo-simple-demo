@@ -38,7 +38,7 @@ class systemMonit {
       si.osInfo().then(r => info.osInfo = r),
       si.battery().then(r => info.battery = r),
       si.system().then(r => info.system = r),
-      si.processes().then(r => info.processes = _.slice(_.orderBy(r.list, 'pcpu', 'desc'), 0, 5)),
+      si.processes().then(r => info.processes = _.slice(_.orderBy(r.list, 'pcpu', 'desc'), 0, 6)),
     ]);
     // info.networkStats = this.networkStats || {};
     info.networkStats = networkStats

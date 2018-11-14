@@ -12,12 +12,12 @@ class init {
         this.netDownloadData = [];
 
 
-        this.processDataX = [];
-        this.processSeriesData = [{
-            name: 'xxx',
-            type: 'bar',
-            data: []
-        }];
+        // this.processDataX = [];
+        // this.processSeriesData = [{
+        //     name: 'xxx',
+        //     type: 'bar',
+        //     data: []
+        // }];
 
         this.cronTask();
     }
@@ -455,7 +455,7 @@ class init {
         let legendData = ['cpu', 'mem'];
         let title = "进程";//标题
         let colors = ["#036BC8", "#FFF", "#5EBEFC", "#2EF7F3"];
-        let option = {
+        this.processOption = {
             // backgroundColor: '#0f375f',
             // title: {
             //     text: title,
@@ -516,6 +516,13 @@ class init {
                 },
                 axisLabel: {
                     interval: 0,
+                    rotate: 15,
+                    formatter: function (value, index) {
+                        if(value.length>10){
+                            return value.substr(0,10);
+                        }
+                        return value;
+                    },
                     textStyle: {
                         color: '#9ea7c4',
                         fontSize: 12
@@ -524,7 +531,7 @@ class init {
                 axisTick: {
                     show: false
                 },
-                data: this.processDataX,
+                data: [],
             }],
             yAxis: [{
                 type: 'value',
@@ -551,11 +558,39 @@ class init {
                     formatter: '{value} %'
                 }
             }],
-            series: this.processSeriesData
+            series: [{
+                name: 'cpu使用',
+                type: 'bar',
+                data: [],
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{c}%',
+                        textStyle: {
+                            color: 'white'
+                        }
+                    }
+                }
+            }, {
+                name: '内存使用',
+                type: 'bar',
+                data: [],
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{c}%',
+                        textStyle: {
+                            color: 'white'
+                        }
+                    }
+                }
+            }]
         };
 
         // 使用刚指定的配置项和数据显示图表。
-        this.processChart.setOption(option);
+        this.processChart.setOption(this.processOption);
         window.addEventListener("resize", function () {
             this.processChart.resize();
         });
@@ -637,71 +672,24 @@ class init {
             //process chart
             let processInfo = sysInfo.processes || [];
             let _len = processInfo.length;
-            this.processDataX = [];
-            let cpuInfo = {
-                name: 'cpu使用',
-                type: 'bar',
-                data: [],
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'top',
-                        textStyle: {
-                            color: 'white'
-                        }
-                    }
-                }
-            };
-            let menInfo = {
-                name: '内存使用',
-                type: 'bar',
-                data: [],
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'top',
-                        textStyle: {
-                            color: 'white'
-                        }
-                    }
-                }
-            };
+            let processDataX = [];
+            let cpuData = [];
+            let menData = [];
             //构造echart数据
             for (let i = 0; i < _len; i++) {
-                this.processDataX.push(processInfo[i].name);
-                cpuInfo.data.push(processInfo[i].pcpu);
-                menInfo.data.push(processInfo[i].pmem);
+                let processName = processInfo[i].name;
+                processDataX.push(processName);
+                cpuData.push(processInfo[i].pcpu);
+                menData.push(processInfo[i].pmem);
             }
+            this.processOption.xAxis[0].data = processDataX;
+            this.processOption.series[0].data = cpuData;
+            this.processOption.series[1].data = menData;
 
-            this.processSeriesData = [cpuInfo, menInfo];
+            console.log(processDataX)
             if (this.processChart) {
                 //重新渲染表格
-                this.processChart.setOption({
-                    xAxis: [{
-                        type: 'category',
-                        axisLine: {
-                            show: true,
-                            lineStyle: {
-                                color: '#6173A3'
-                            }
-                        },
-                        splitLine: {
-                            show: false
-                        },
-                        axisLabel: {
-                            interval: 0,
-                            textStyle: {
-                                color: '#9ea7c4',
-                                fontSize: 12
-                            }
-                        },
-                        axisTick: {
-                            show: false
-                        },
-                        data: this.processDataX,
-                    }],
-                    series: this.processSeriesData
-                });
+                this.processChart.setOption(this.processOption);
             }
 
             //other info
@@ -718,9 +706,7 @@ class init {
                 this.document.getElementById('containTitle').innerHTML = hostname;
                 this.title = true;
             }
-            console.log(otherMsg)
             this.document.getElementById('otherInfo').innerHTML = otherMsg;
-
 
         }, 1000);
     }
