@@ -679,8 +679,8 @@ class init {
             for (let i = 0; i < _len; i++) {
                 let processName = processInfo[i].name;
                 processDataX.push(processName);
-                cpuData.push(processInfo[i].pcpu);
-                menData.push(processInfo[i].pmem);
+                cpuData.push(processInfo[i].pcpu.toFixed(2));
+                menData.push(processInfo[i].pmem.toFixed(2));
             }
             this.processOption.xAxis[0].data = processDataX;
             this.processOption.series[0].data = cpuData;

@@ -45,9 +45,24 @@ class systemMonit {
     return info;
   }
 
-  cronTask() {
+  async cronTask() {
+    let osInfo = si.osInfo();
+    let targetIface = null;
+    let rx = 0;
+
+    let arr  = await si.networkInterfaces();
+    for (let i=0;i<arr.length;i++){
+      let iface = arr[i].iface;
+      let netInfo = await si.networkStats(iface)||{};
+      let _rx = netInfo.rx||0;
+      if(_rx>rx){
+        rx = _rx;
+        targetIface = iface;
+      }
+    }
+
     setInterval(async () => {
-      networkStats = await si.networkStats();
+      networkStats = await si.networkStats(targetIface);
     }, 1000)
   }
 }
